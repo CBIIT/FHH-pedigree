@@ -1,0 +1,145 @@
+{
+  "comment": "This is a test pedigree that contains fictional people",
+  "proband": "10001-01-001",
+  "people": {
+    "10001-01-001": {
+      "name": "Proband Person",
+      "father": "10001-02-001",
+      "mother": "10001-02-002",
+      "demographics": {
+        "gender": "Male",
+        "height_in_inches": 69,
+        "weight_in_pounds": "220",
+        "birthdate": "11/19/1968",
+        "races": [
+          "white"
+        ],
+        "ethnicities": [
+          "jewish"
+        ]
+      },
+      "diseases": [
+        {
+          "name" : "Prediabetes",
+          "shorthand": "Prediabetes",
+          "code": "R73.03",
+          "laterality": "0.0",
+          "diagnosis_method": "4.0",
+          "date_of_diagnosis": "2/14/2014"
+        },
+        {
+          "name" : "Diabetes Type 2",
+          "shorthand": "Diabetes",
+          "code": "E11.9",
+          "laterality": "0.0",
+          "diagnosis_method": "4.0",
+          "estimated_age_at_diagnosis": "50-59 Years"
+        }
+      ],
+      "procedures": [
+        {
+          "name" : "Skin Tag Removal First 15 Tags",
+          "shorthand" : "ST Removal",
+          "code" : "11200",
+          "date_of_procedure": "12/14/2023"
+        },
+        {
+          "name" : "Benign Skin Lesion Removal First 14 Spots",
+          "shorthand" : "BSL Removal",
+          "code" : "17110",
+          "date_of_procedure": "12/14/2023"
+        }
+      ],
+      "phenotypes" : [
+        {
+          "phenotype": "Blood Type ",
+          "value": "B+"
+        }
+      ]
+    },
+    "10001-02-001": {
+      "name": "Father of Proband",
+      "father": "10001-04-001",
+      "mother": "10001-04-002",
+      "demographics": {
+        "gender": "Male"
+      }
+    },
+    "10001-02-002": {
+      "name": "Mother of Proband",
+      "father": "10001-04-003",
+      "mother": "10001-04-004",
+      "demographics": {
+        "gender": "Female"
+      }
+    },
+    "10001-04-001": {
+      "name": "Paternal Grandfather of Proband",
+      "father": "10001-04-001",
+      "mother": "10001-04-002",
+      "demographics": {
+        "gender": "Male"
+      }
+    },
+    "10001-04-002": {
+      "name": "Paternal Grandmother of Proband",
+      "father": "10001-04-003",
+      "mother": "10001-04-004",
+      "demographics": {
+        "gender": "Female"
+      }
+    },
+    "10001-04-003": {
+      "name": "Maternal Grandfather of Proband",
+      "father": "10001-04-001",
+      "mother": "10001-04-002",
+      "demographics": {
+        "gender": "Male"
+      }
+    },
+    "10001-04-004": {
+      "name": "Maternal Grandmother of Proband",
+      "father": "10001-04-003",
+      "mother": "10001-04-004",
+      "demographics": {
+        "gender": "Female"
+      }
+    },
+    "10001-03-001": {
+      "name": "First Daughter of Proband",
+      "father": "10001-01-001",
+      "mother": "10001-01-002",
+      "demographics": {
+        "gender": "Female"
+      }
+    },
+    "10001-03-002": {
+      "name": "Second Daughter of Proband",
+      "father": "10001-01-001",
+      "mother": "10001-01-002",
+      "demographics": {
+        "gender": "Female"
+      }
+    },
+    "10001-03-003": {
+      "name": "First Son of Proband",
+      "father": "10001-01-001",
+      "mother": "10001-01-003",
+      "demographics": {
+        "gender": "Male"
+      }
+    },
+    "10001-01-002": {
+      "name": "Partner of Proband for Daughters",
+      "demographics": {
+        "gender": "Female"
+      }
+    },
+    "10001-01-002": {
+      "name": "Partner of Proband for Son",
+      "demographics": {
+        "gender": "Female"
+      }
+    }
+  }
+}
