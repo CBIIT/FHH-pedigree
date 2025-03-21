@@ -30,6 +30,34 @@ export function find_all_partners(person_id) {
   return partners;
 }
 
+// Exception ID is if we wanted to find full siblings
+export function find_children_from_both_parents(father_id, mother_id, exception_id) {
+  var children = [];
+  $.each(data['people'], function(person_id, details){
+    if (details['father'] == father_id && details['mother'] == mother_id) {
+      if (person_id != exception_id) children.push(person_id);
+    }
+  });
+  sort_people_by_age_name_id(children);
+
+  return children;
+}
+
+export function find_all_parents_of_list(list) {
+  var parents_list = [];
+  $.each(list, function(index, person_id){
+    if (data['people'][person_id]["father"]) parents_list.push(data['people'][person_id]["father"]);
+    if (data['people'][person_id]["mother"]) parents_list.push(data['people'][person_id]["mother"]);
+  });
+
+  // Remove duplicates and return
+  console.log(parents_list);
+  return Array.from(new Set(parents_list));
+}
+
+
+
+///// Helper functions that do not need to be tested
 
 function sort_people_by_age_name_id (list) {
   list.sort(compare_by_age_name_id);
@@ -65,7 +93,6 @@ export function determine_age(id) {
 
   if (data['people'][id]['demographics']['birthdate']) {
     var birthdate = new Date(data['people'][id]['demographics']['birthdate']);
-    console.log(birthdate);
     var age = calculate_age(birthdate);
     return age;
   }
