@@ -1,5 +1,6 @@
-import { set_data, determine_age, find_children, find_all_partners, find_children_from_both_parents,
-  find_all_parents_of_list } from './fhh_build_pedigree';
+import {  set_data, determine_age, find_children, find_all_partners, find_children_from_both_parents,
+          find_all_parents_of_list, build_family_tree_with_ancestors, expand_one_generation_to_include_partners
+       } from './fhh_build_pedigree';
 
 import d from './fhh_pedigree.test.json';
 
@@ -107,4 +108,59 @@ test("Test see if we can find all grandparents", () => {
   expect(grandparents_list).toContain("10001-04-002"); // PGM
   expect(grandparents_list).toContain("10001-04-003"); // MGF
   expect(grandparents_list).toContain("10001-04-004"); // MGM
+});
+
+test("Test see if we can find all great-grandparents", () => {
+  var list = ["10001-01-001"];
+
+  var parents_list = find_all_parents_of_list(list);
+  var grandparents_list = find_all_parents_of_list(parents_list);
+  var great_grandparents_list = find_all_parents_of_list(grandparents_list);
+
+  console.log(great_grandparents_list);
+
+  expect(great_grandparents_list).toContain("10001-06-001");
+  expect(great_grandparents_list).toContain("10001-06-002");
+  expect(great_grandparents_list).toContain("10001-06-003");
+  expect(great_grandparents_list).toContain("10001-06-004");
+  expect(great_grandparents_list).toContain("10001-06-005");
+  expect(great_grandparents_list).toContain("10001-06-006");
+  expect(great_grandparents_list).toContain("10001-06-007");
+  expect(great_grandparents_list).toContain("10001-06-008");
+});
+
+test("Test see if we can find all great-great-grandparents", () => {
+  var list = ["10001-01-001"];
+
+  var parents_list = find_all_parents_of_list(list);
+  var grandparents_list = find_all_parents_of_list(parents_list);
+  var great_grandparents_list = find_all_parents_of_list(grandparents_list);
+  var great_great_grandparents_list = find_all_parents_of_list(great_grandparents_list);
+
+  console.log(great_grandparents_list);
+
+  expect(great_great_grandparents_list).toContain("10001-08-001");
+  expect(great_great_grandparents_list).toContain("10001-08-002");
+  expect(great_great_grandparents_list).toContain("10001-08-003");
+  expect(great_great_grandparents_list).toContain("10001-08-004");
+  expect(great_great_grandparents_list).not.toContain("10001-08-005"); // We only put in 4 of the great-great generation
+});
+
+test("Test see if we build a family tree of ancestors", () => {
+  const family_tree = build_family_tree_with_ancestors();
+  console.log(family_tree);
+
+  expect(family_tree[0]).toContain("10001-08-001");
+  expect(family_tree[1]).toContain("10001-06-001");
+  expect(family_tree[2]).toContain("10001-04-001");
+  expect(family_tree[3]).toContain("10001-02-001");
+  expect(family_tree[4]).toContain("10001-01-001");
+
+});
+
+test("Test expand_one_generation_to_include_partners", () => {
+  const family_tree = build_family_tree_with_ancestors();
+
+  var generation = expand_one_generation_to_include_partners(family_tree[0]);
+  console.log(generation);
 });

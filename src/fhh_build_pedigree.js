@@ -4,6 +4,39 @@ export function set_data (d) {
   data = d;
 }
 
+export function build_family_tree_with_ancestors() {
+  const proband_id = data['proband'];
+
+  var tree = [];
+  // First go up the tree from the proband to find all ancestors.
+  // Each generation is an array of members ordered as they will be on display
+
+  const list = [proband_id];
+  tree.push(list);
+
+  var i = 0;
+  while (tree[i] && tree[i].length > 0) {
+    const new_list = find_all_parents_of_list(tree[i]);
+    if (new_list && new_list.length > 0) tree.push(new_list);
+    i++;
+  }
+  // We need to get the oldest generation to be the first (ie. [0]) and each generation to go up from there
+  tree.reverse();
+  return tree;
+}
+
+export function expand_one_generation_to_include_partners(generation) {
+  $.each(generation, function(index, person_id) {
+    var all_partners = find_all_partners(person_id);
+    console.log(person_id + ": " + all_partners);
+    $.each(all_partners, function (index2, new_partner) {
+      generation.splice(index, new_partner)
+    });
+    console.log(generation);
+  });
+}
+
+
 export function find_children(parent_id, exception_id) {
   var children = [];
   $.each(data['people'], function(person_id, details){
