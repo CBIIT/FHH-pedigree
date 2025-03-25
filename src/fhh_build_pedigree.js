@@ -26,10 +26,10 @@ export function build_family_tree_with_ancestors() {
 }
 
 export function expand_one_generation_to_include_partners(generation) {
-  $.each(generation, function(index, person_id) {
+  generation.forEach(function(index, person_id) {
     var all_partners = find_all_partners(person_id);
     console.log(person_id + ": " + all_partners);
-    $.each(all_partners, function (index2, new_partner) {
+    all_partners.forEach(function (index2, new_partner) {
       generation.splice(index, new_partner)
     });
     console.log(generation);
@@ -39,11 +39,13 @@ export function expand_one_generation_to_include_partners(generation) {
 
 export function find_children(parent_id, exception_id) {
   var children = [];
-  $.each(data['people'], function(person_id, details){
+  const people = data['people'];
+
+  for (const [person_id, details] of Object.entries(people)) {
     if (details['father'] == parent_id || details['mother'] == parent_id) {
       if (person_id != exception_id) children.push(person_id);
     }
-  });
+  }
   sort_people_by_age_name_id(children);
 
   return children;
@@ -53,12 +55,15 @@ export function find_all_partners(person_id) {
   var partners = [];
 
   var children = find_children(person_id);
-  $.each(children, function(index, child_id) {
-    var mother = data['people'][child_id]['mother'];
-    var father = data['people'][child_id]['father'];
-    if (mother != person_id && $.inArray(mother, partners) == -1) partners.push(mother);
-    if (father != person_id && $.inArray(father, partners) == -1) partners.push(father);
-  });
+  console.log(children);
+
+  for (const index in children) {
+    const child_id = children[index];
+    var mother_id = data['people'][child_id]['mother'];
+    var father_id = data['people'][child_id]['father'];
+    if (mother_id != person_id && partners.includes(mother_id) == -1) partners.push(mother);
+    if (father_id != person_id && partners.includes(father_id) == -1) partners.push(father);
+  }
 
   return partners;
 }
@@ -66,11 +71,12 @@ export function find_all_partners(person_id) {
 // Exception ID is if we wanted to find full siblings
 export function find_children_from_both_parents(father_id, mother_id, exception_id) {
   var children = [];
-  $.each(data['people'], function(person_id, details){
+  const people = data['people'];
+  for (const [person_id, details] of Object.entries(people)) {
     if (details['father'] == father_id && details['mother'] == mother_id) {
       if (person_id != exception_id) children.push(person_id);
     }
-  });
+  }
   sort_people_by_age_name_id(children);
 
   return children;
@@ -78,10 +84,12 @@ export function find_children_from_both_parents(father_id, mother_id, exception_
 
 export function find_all_parents_of_list(list) {
   var parents_list = [];
-  $.each(list, function(index, person_id){
+
+  for (let index in list) {
+    const person_id = list[index];
     if (data['people'][person_id]["father"]) parents_list.push(data['people'][person_id]["father"]);
     if (data['people'][person_id]["mother"]) parents_list.push(data['people'][person_id]["mother"]);
-  });
+  }
 
   // Remove duplicates and return
   console.log(parents_list);
