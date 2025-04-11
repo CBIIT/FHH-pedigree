@@ -189,6 +189,12 @@
         "gender": "Female"
       }
     },
+    "10001-08-006": {
+      "name": "StepUncle of Proband",
+      "demographics": {
+        "gender": "Male"
+      }
+    },
 
     "10001-03-001": {
       "name": "First Daughter of Proband",
@@ -226,14 +232,23 @@
       "mother": "10001-08-005",
       "demographics": {
         "gender": "Female"
-      },
-      "10001-06-011": {
-        "name": "Half Great Aunt (only dad in tree)",
-        "father": "10001-08-003",
-        "demographics": {
-          "gender": "Female"
-        }
+      }
+    },
+    "10001-06-011": {
+      "name": "Half Great Uncle",
+      "father": "10001-08-006",
+      "mother": "10001-08-002",
+      "demographics": {
+        "gender": "Male"
+      }
+    },
+    "10001-06-012": {
+      "name": "Half Great Aunt (only dad in tree)",
+      "father": "10001-08-003",
+      "demographics": {
+        "gender": "Female"
       }
     }
+    
   }
 }

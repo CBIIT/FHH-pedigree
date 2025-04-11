@@ -1,5 +1,6 @@
 import {  set_data, determine_age, find_children, find_all_partners, find_children_from_both_parents,
-          find_all_parents_of_list, build_family_tree_with_ancestors, expand_one_generation_to_include_partners
+          find_all_parents_of_list, build_family_tree_with_ancestors, expand_one_generation_to_include_partners,
+          expand_next_generation_to_include_all_children, determine_sex
        } from './fhh_build_pedigree';
 
 import d from './fhh_pedigree.test.json';
@@ -52,23 +53,23 @@ test("Test that we can find all partners of the proband", () => {
 });
 
 test("Test that we can find children of both parents without using the exception", () => {
-  var children = find_children_from_both_parents("10001-01-001", "10001-01-002");
+  const children = find_children_from_both_parents("10001-01-001", "10001-01-002");
 
   expect(children).toContain("10001-03-001"); // Daughter with first partner
   expect(children).toContain("10001-03-002"); // Daughter with first partner
   expect(children).not.toContain("10001-03-003"); // Son with other partner should not be there
 
   // Now try the other partner
-  var children = find_children_from_both_parents("10001-01-001", "10001-01-003");
-  expect(children).not.toContain("10001-03-001"); // Daughter with first partner
-  expect(children).not.toContain("10001-03-002"); // Daughter with first partner
-  expect(children).toContain("10001-03-003"); // Son with other partner should not be there
+  const children_from_different_mom = find_children_from_both_parents("10001-01-001", "10001-01-003");
+  expect(children_from_different_mom).not.toContain("10001-03-001"); // Daughter with first partner
+  expect(children_from_different_mom).not.toContain("10001-03-002"); // Daughter with first partner
+  expect(children_from_different_mom).toContain("10001-03-003"); // Son with other partner should not be there
 
 
 });
 
 test("Test that we can find children of both parents with the exception (Full Siblings)", () => {
-  var children = find_children_from_both_parents("10001-01-001", "10001-01-002", "10001-03-001");
+  const children = find_children_from_both_parents("10001-01-001", "10001-01-002", "10001-03-001");
 
   expect(children).not.toContain("10001-03-001"); // Daughter with first partner
   expect(children).toContain("10001-03-002"); // Daughter with first partner
@@ -76,90 +77,124 @@ test("Test that we can find children of both parents with the exception (Full Si
 });
 
 test("Test that we can find all the parents of a list of people (proband only)", () => {
-  var list = ["10001-01-001"];
 
-  var parents_list = find_all_parents_of_list(list);
+  const list = [{"father":"10001-01-001"}];
+
+  const parents_list = find_all_parents_of_list(list);
   console.log(parents_list);
 
-  expect(parents_list).toContain("10001-02-001"); // Father
-  expect(parents_list).toContain("10001-02-002"); // Mother
+
+  expect(parents_list[0].father).toContain("10001-02-001"); // Father
+  expect(parents_list[0].mother).toContain("10001-02-002"); // Mother
 });
 
 test("Test that we can find all the parents of a list of people (all parents of all of probands children)", () => {
-  var list = ["10001-03-001", "10001-03-002", "10001-03-003"];
+  const list = [{"father": "10001-03-001"}, {"father": "10001-03-002"}, {"father": "10001-03-003"}];
 
-  var parents_list = find_all_parents_of_list(list);
+  const parents_list = find_all_parents_of_list(list);
   console.log(parents_list);
 
-  expect(parents_list).toContain("10001-01-001"); // Father
-  expect(parents_list).toContain("10001-01-002"); // Mother of daughters
-  expect(parents_list).toContain("10001-01-003"); // Mother of son
+  expect(parents_list[0].father).toContain("10001-01-001"); // Father
+  expect(parents_list[0].mother).toContain("10001-01-002"); // Mother of daughters
+  expect(parents_list[1].father).toContain("10001-01-001"); // Mother of daughters
+  expect(parents_list[1].mother).toContain("10001-01-003"); // Mother of son (different mother)
 });
 
 test("Test see if we can find all grandparents", () => {
-  var list = ["10001-01-001"];
+  const list = [{"father":"10001-01-001"}];
 
-  var parents_list = find_all_parents_of_list(list);
-  var grandparents_list = find_all_parents_of_list(parents_list);
+  const parents_list = find_all_parents_of_list(list);
+  const grandparents_list = find_all_parents_of_list(parents_list);
   console.log(grandparents_list);
 
-  expect(grandparents_list).toContain("10001-04-001"); // PGF
-  expect(grandparents_list).toContain("10001-04-002"); // PGM
-  expect(grandparents_list).toContain("10001-04-003"); // MGF
-  expect(grandparents_list).toContain("10001-04-004"); // MGM
+  expect(grandparents_list[0].father).toContain("10001-04-003"); // Maternal Grandfather
+  expect(grandparents_list[0].mother).toContain("10001-04-004");
+  expect(grandparents_list[1].father).toContain("10001-04-001");
+  expect(grandparents_list[1].mother).toContain("10001-04-002");
 });
 
 test("Test see if we can find all great-grandparents", () => {
-  var list = ["10001-01-001"];
+  const list = [{"father":"10001-01-001"}];
 
-  var parents_list = find_all_parents_of_list(list);
-  var grandparents_list = find_all_parents_of_list(parents_list);
-  var great_grandparents_list = find_all_parents_of_list(grandparents_list);
+  const parents_list = find_all_parents_of_list(list);
+  const grandparents_list = find_all_parents_of_list(parents_list);
+  const great_grandparents_list = find_all_parents_of_list(grandparents_list);
 
   console.log(great_grandparents_list);
 
-  expect(great_grandparents_list).toContain("10001-06-001");
-  expect(great_grandparents_list).toContain("10001-06-002");
-  expect(great_grandparents_list).toContain("10001-06-003");
-  expect(great_grandparents_list).toContain("10001-06-004");
-  expect(great_grandparents_list).toContain("10001-06-005");
-  expect(great_grandparents_list).toContain("10001-06-006");
-  expect(great_grandparents_list).toContain("10001-06-007");
-  expect(great_grandparents_list).toContain("10001-06-008");
+  expect(great_grandparents_list[0].father).toContain("10001-06-007");
+  expect(great_grandparents_list[0].mother).toContain("10001-06-008");
+  expect(great_grandparents_list[1].father).toContain("10001-06-005");
+  expect(great_grandparents_list[1].mother).toContain("10001-06-006");
+  expect(great_grandparents_list[2].father).toContain("10001-06-003");
+  expect(great_grandparents_list[2].mother).toContain("10001-06-004");
+  expect(great_grandparents_list[3].father).toContain("10001-06-001");
+  expect(great_grandparents_list[3].mother).toContain("10001-06-002");
 });
 
 test("Test see if we can find all great-great-grandparents", () => {
-  var list = ["10001-01-001"];
+  const list = [{"father":"10001-01-001"}];
 
-  var parents_list = find_all_parents_of_list(list);
-  var grandparents_list = find_all_parents_of_list(parents_list);
-  var great_grandparents_list = find_all_parents_of_list(grandparents_list);
-  var great_great_grandparents_list = find_all_parents_of_list(great_grandparents_list);
+  const parents_list = find_all_parents_of_list(list);
+  const grandparents_list = find_all_parents_of_list(parents_list);
+  const great_grandparents_list = find_all_parents_of_list(grandparents_list);
+  const great_great_grandparents_list = find_all_parents_of_list(great_grandparents_list);
 
   console.log(great_grandparents_list);
 
-  expect(great_great_grandparents_list).toContain("10001-08-001");
-  expect(great_great_grandparents_list).toContain("10001-08-002");
-  expect(great_great_grandparents_list).toContain("10001-08-003");
-  expect(great_great_grandparents_list).toContain("10001-08-004");
-  expect(great_great_grandparents_list).not.toContain("10001-08-005"); // We only put in 4 of the great-great generation
+  expect(great_great_grandparents_list[0].father).toContain("10001-08-003");
+  expect(great_great_grandparents_list[0].mother).toContain("10001-08-004");
+  expect(great_great_grandparents_list[1].father).toContain("10001-08-001");
+  expect(great_great_grandparents_list[1].mother).toContain("10001-08-002");
 });
 
 test("Test see if we build a family tree of ancestors", () => {
   const family_tree = build_family_tree_with_ancestors();
   console.log(family_tree);
 
-  expect(family_tree[0]).toContain("10001-08-001");
-  expect(family_tree[1]).toContain("10001-06-001");
-  expect(family_tree[2]).toContain("10001-04-001");
-  expect(family_tree[3]).toContain("10001-02-001");
-  expect(family_tree[4]).toContain("10001-01-001");
+  expect(family_tree[0][0].father).toContain("10001-08-003");
+  expect(family_tree[1][0].father).toContain("10001-06-007");
+  expect(family_tree[2][0].father).toContain("10001-04-003");
+  expect(family_tree[3][0].father).toContain("10001-02-001");
+  expect(family_tree[4][0].father).toContain("10001-01-001");
+
+});
+
+test("Test check that determine_sex function works correctly", () => {
+  console.log ("10001-02-001: " + determine_sex("10001-02-001"));
+  console.log ("10001-02-002: " + determine_sex("10001-02-002"));
+
+  expect(determine_sex("10001-02-001")).toBe("Male");
+  expect(determine_sex("10001-02-002")).toBe("Female");
 
 });
 
 test("Test expand_one_generation_to_include_partners", () => {
   const family_tree = build_family_tree_with_ancestors();
 
-  var generation = expand_one_generation_to_include_partners(family_tree[0]);
+  console.log(family_tree[0]);
+  let generation = expand_one_generation_to_include_partners(family_tree[0]);
   console.log(generation);
+  expect(generation[0].mother).toBeUndefined();  // The first Mother is not in the pedigree, only the father
+  expect(generation[1].mother).toContain("10001-08-004");
+  expect(generation[2].mother).toContain("10001-08-005");
+  expect(generation[3].mother).toContain("10001-08-002");
+  expect(generation[4].mother).toContain("10001-08-002");
+  expect(generation[0].father).toContain("10001-08-003");
+  expect(generation[1].father).toContain("10001-08-003");
+  expect(generation[2].father).toContain("10001-08-001");
+  expect(generation[3].father).toContain("10001-08-001");
+  expect(generation[4].father).toContain("10001-08-006");
+});
+
+test("Test expand_next_generation_to_include_all_children", () => {
+  const family_tree = build_family_tree_with_ancestors();
+  family_tree[0] = expand_one_generation_to_include_partners(family_tree[0]);
+  console.log(family_tree[0]);
+  let next_generation = expand_next_generation_to_include_all_children(family_tree[0]);
+  console.log(next_generation);
+  next_generation = expand_one_generation_to_include_partners(next_generation);
+  console.log(next_generation);
+
+
 });

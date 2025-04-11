@@ -1,5 +1,5 @@
-//import $ from 'jquery';
-//global.$ = $;
+
+// The below makes the jest console.log output cleaner and on one line
 global.console.log = (msg) => {
   const stack = new Error().stack;
   const callerLine = stack.split("\n")[2]; // Get the relevant line from the stack
