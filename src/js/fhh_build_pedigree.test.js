@@ -1,6 +1,7 @@
 import {  set_data, determine_age, find_children, find_all_partners, find_children_from_both_parents,
-          find_all_parents_of_list, build_family_tree_with_ancestors, expand_one_generation_to_include_partners,
-          expand_next_generation_to_include_all_children, determine_sex
+          find_all_parents_of_list, build_family_tree_with_ancestors, build_entire_family_tree,
+          expand_one_generation_to_include_partners, expand_next_generation_to_include_all_children,
+          determine_sex
        } from './fhh_build_pedigree';
 
 import d from './fhh_pedigree.test.json';
@@ -81,7 +82,7 @@ test("Test that we can find all the parents of a list of people (proband only)",
   const list = [{"father":"10001-01-001"}];
 
   const parents_list = find_all_parents_of_list(list);
-  console.log(parents_list);
+//  console.log(parents_list);
 
 
   expect(parents_list[0].father).toContain("10001-02-001"); // Father
@@ -92,7 +93,7 @@ test("Test that we can find all the parents of a list of people (all parents of 
   const list = [{"father": "10001-03-001"}, {"father": "10001-03-002"}, {"father": "10001-03-003"}];
 
   const parents_list = find_all_parents_of_list(list);
-  console.log(parents_list);
+//  console.log(parents_list);
 
   expect(parents_list[0].father).toContain("10001-01-001"); // Father
   expect(parents_list[0].mother).toContain("10001-01-002"); // Mother of daughters
@@ -105,7 +106,7 @@ test("Test see if we can find all grandparents", () => {
 
   const parents_list = find_all_parents_of_list(list);
   const grandparents_list = find_all_parents_of_list(parents_list);
-  console.log(grandparents_list);
+//  console.log(grandparents_list);
 
   expect(grandparents_list[0].father).toContain("10001-04-003"); // Maternal Grandfather
   expect(grandparents_list[0].mother).toContain("10001-04-004");
@@ -120,7 +121,7 @@ test("Test see if we can find all great-grandparents", () => {
   const grandparents_list = find_all_parents_of_list(parents_list);
   const great_grandparents_list = find_all_parents_of_list(grandparents_list);
 
-  console.log(great_grandparents_list);
+//  console.log(great_grandparents_list);
 
   expect(great_grandparents_list[0].father).toContain("10001-06-007");
   expect(great_grandparents_list[0].mother).toContain("10001-06-008");
@@ -140,7 +141,7 @@ test("Test see if we can find all great-great-grandparents", () => {
   const great_grandparents_list = find_all_parents_of_list(grandparents_list);
   const great_great_grandparents_list = find_all_parents_of_list(great_grandparents_list);
 
-  console.log(great_grandparents_list);
+//  console.log(great_grandparents_list);
 
   expect(great_great_grandparents_list[0].father).toContain("10001-08-003");
   expect(great_great_grandparents_list[0].mother).toContain("10001-08-004");
@@ -150,7 +151,7 @@ test("Test see if we can find all great-great-grandparents", () => {
 
 test("Test see if we build a family tree of ancestors", () => {
   const family_tree = build_family_tree_with_ancestors();
-  console.log(family_tree);
+//  console.log(family_tree);
 
   expect(family_tree[0][0].father).toContain("10001-08-003");
   expect(family_tree[1][0].father).toContain("10001-06-007");
@@ -161,8 +162,6 @@ test("Test see if we build a family tree of ancestors", () => {
 });
 
 test("Test check that determine_sex function works correctly", () => {
-  console.log ("10001-02-001: " + determine_sex("10001-02-001"));
-  console.log ("10001-02-002: " + determine_sex("10001-02-002"));
 
   expect(determine_sex("10001-02-001")).toBe("Male");
   expect(determine_sex("10001-02-002")).toBe("Female");
@@ -172,10 +171,10 @@ test("Test check that determine_sex function works correctly", () => {
 test("Test expand_one_generation_to_include_partners", () => {
   const family_tree = build_family_tree_with_ancestors();
 
-  console.log(family_tree[0]);
+//  console.log(family_tree[0]);
   let generation = expand_one_generation_to_include_partners(family_tree[0]);
   console.log(generation);
-  expect(generation[0].mother).toBeUndefined();  // The first Mother is not in the pedigree, only the father
+  expect(generation[0].mother).toContain("UNKNOWN");  // The first Mother is not in the pedigree, only the father
   expect(generation[1].mother).toContain("10001-08-004");
   expect(generation[2].mother).toContain("10001-08-005");
   expect(generation[3].mother).toContain("10001-08-002");
@@ -189,12 +188,33 @@ test("Test expand_one_generation_to_include_partners", () => {
 
 test("Test expand_next_generation_to_include_all_children", () => {
   const family_tree = build_family_tree_with_ancestors();
+//  console.log(family_tree[0]);
   family_tree[0] = expand_one_generation_to_include_partners(family_tree[0]);
   console.log(family_tree[0]);
-  let next_generation = expand_next_generation_to_include_all_children(family_tree[0]);
+  let next_generation = expand_next_generation_to_include_all_children(family_tree[1], family_tree[0]);
   console.log(next_generation);
-  next_generation = expand_one_generation_to_include_partners(next_generation);
-  console.log(next_generation);
+  const final_look = expand_one_generation_to_include_partners(next_generation);
+  console.log(final_look);
 
+  expect(next_generation[0].mother).toContain("10001-06-008");
+  expect(next_generation[1].mother).toContain("10001-06-006");
+  expect(next_generation[2].mother).toContain("10001-06-004");
+  expect(next_generation[3].mother).toContain("10001-06-012");
+  expect(next_generation[4].mother).toContain("10001-06-002");
+  expect(next_generation[5].mother).toContain("10001-06-010");  // This Person was added as sibling of 002
+  expect(next_generation[6].mother).toBeUndefined();  // This is a male
+  expect(next_generation[0].father).toContain("10001-06-007");
+  expect(next_generation[1].father).toContain("10001-06-005");
+  expect(next_generation[2].father).toContain("10001-06-003");
+  expect(next_generation[3].father).toBeUndefined();  // This is a female
+  expect(next_generation[4].father).toContain("10001-06-001");
+  expect(next_generation[5].father).toBeUndefined();  // The is a Female
+  expect(next_generation[6].father).toContain("10001-06-011");  // The last uncle is related to 001
+
+});
+
+test("Test expand_next_generation_to_include_all_children", () => {
+  const family_tree = build_entire_family_tree();
+  console.log(family_tree);
 
 });

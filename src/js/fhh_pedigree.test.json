@@ -248,7 +248,14 @@
       "demographics": {
         "gender": "Female"
       }
+    },
+    "10001-04-005": {
+      "name": "Child of Great Aunt",
+      "mother": "10001-06-012",
+      "demographics": {
+        "gender": "Female"
+      }
     }
-    
+
   }
 }
