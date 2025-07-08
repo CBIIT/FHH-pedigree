@@ -1,261 +1,157 @@
 {
   "comment": "This is a test pedigree that contains fictional people",
-  "proband": "10001-01-001",
+  "proband": "10001-01-004",
   "people": {
-    "10001-01-001": {
+    "10001-01-004": {
       "name": "Proband Person",
-      "father": "10001-02-001",
-      "mother": "10001-02-002",
-      "demographics": {
-        "gender": "Male",
-        "height_in_inches": 69,
-        "weight_in_pounds": "220",
-        "birthdate": "11/19/1968",
-        "races": [
-          "white"
-        ],
-        "ethnicities": [
-          "jewish"
-        ]
-      },
-      "diseases": [
-        {
-          "name" : "Prediabetes",
-          "shorthand": "Prediabetes",
-          "code": "R73.03",
-          "laterality": "0.0",
-          "diagnosis_method": "4.0",
-          "date_of_diagnosis": "2/14/2014"
-        },
-        {
-          "name" : "Diabetes Type 2",
-          "shorthand": "Diabetes",
-          "code": "E11.9",
-          "laterality": "0.0",
-          "diagnosis_method": "4.0",
-          "estimated_age_at_diagnosis": "50-59 Years"
-        }
-      ],
-      "procedures": [
-        {
-          "name" : "Skin Tag Removal First 15 Tags",
-          "shorthand" : "ST Removal",
-          "code" : "11200",
-          "date_of_procedure": "12/14/2023"
-        },
-        {
-          "name" : "Benign Skin Lesion Removal First 14 Spots",
-          "shorthand" : "BSL Removal",
-          "code" : "17110",
-          "date_of_procedure": "12/14/2023"
-        }
-      ],
-      "phenotypes" : [
-        {
-          "phenotype": "Blood Type ",
-          "value": "B+"
-        }
-      ]
-    },
-    "10001-02-001": {
-      "name": "Father of Proband",
-      "father": "10001-04-001",
-      "mother": "10001-04-002",
-      "demographics": {
-        "gender": "Male"
-      }
-    },
-    "10001-02-002": {
-      "name": "Mother of Proband",
-      "father": "10001-04-003",
-      "mother": "10001-04-004",
-      "demographics": {
-        "gender": "Female"
-      }
-    },
-    "10001-04-001": {
-      "name": "Paternal Grandfather of Proband",
-      "father": "10001-06-001",
-      "mother": "10001-06-002",
-      "demographics": {
-        "gender": "Male"
-      }
-    },
-    "10001-04-002": {
-      "name": "Paternal Grandmother of Proband",
-      "father": "10001-06-003",
-      "mother": "10001-06-004",
-      "demographics": {
-        "gender": "Female"
-      }
-    },
-    "10001-04-003": {
-      "name": "Maternal Grandfather of Proband",
-      "father": "10001-06-005",
-      "mother": "10001-06-006",
-      "demographics": {
-        "gender": "Male"
-      }
-    },
-    "10001-04-004": {
-      "name": "Maternal Grandmother of Proband",
-      "father": "10001-06-007",
-      "mother": "10001-06-008",
-      "demographics": {
-        "gender": "Female"
-      }
-    },
-
-    "10001-06-001": {
-      "name": "MMP of Proband",
-      "father": "10001-08-001",
-      "mother": "10001-08-002",
-      "demographics": {
-        "gender": "Male"
-      }
-    },
-    "10001-06-002": {
-      "name": "MMM of Proband",
-      "father": "10001-08-003",
-      "mother": "10001-08-004",
-      "demographics": {
-        "gender": "Female"
-      }
-    },
-    "10001-06-003": {
-      "name": "MPP of Proband",
-      "demographics": {
-        "gender": "Male"
-      }
-    },
-    "10001-06-004": {
-      "name": "MPM of Proband",
-      "demographics": {
-        "gender": "Female"
-      }
-    },
-    "10001-06-005": {
-      "name": "PMP of Proband",
-      "demographics": {
-        "gender": "Male"
-      }
-    },
-    "10001-06-006": {
-      "name": "PMM of Proband",
-      "demographics": {
-        "gender": "Female"
-      }
-    },
-    "10001-06-007": {
-      "name": "PPP of Proband",
-      "demographics": {
-        "gender": "Male"
-      }
-    },
-    "10001-06-008": {
-      "name": "PPM of Proband",
-      "demographics": {
-        "gender": "Female"
-      }
-    },
-
-    "10001-08-001": {
-      "name": "MMMP of Proband",
-      "demographics": {
-        "gender": "Male"
-      }
-    },
-    "10001-08-002": {
-      "name": "MMMM of Proband",
-      "demographics": {
-        "gender": "Female"
-      }
-    },
-    "10001-08-003": {
-      "name": "MMPP of Proband",
-      "demographics": {
-        "gender": "Male"
-      }
-    },
-    "10001-08-004": {
-      "name": "MMPM of Proband",
-      "demographics": {
-        "gender": "Female"
-      }
-    },
-    "10001-08-005": {
-      "name": "StepAunt of Proband",
-      "demographics": {
-        "gender": "Female"
-      }
-    },
-    "10001-08-006": {
-      "name": "StepUncle of Proband",
+      "father": "10001-02-017",
+      "mother": "10001-02-016",
       "demographics": {
         "gender": "Male"
       }
     },
 
     "10001-03-001": {
-      "name": "First Daughter of Proband",
-      "father": "10001-01-001",
-      "mother": "10001-01-002",
+      "name": "Son",
+      "father": "10001-01-004",
+      "mother": "10001-01-005",
       "demographics": {
-        "gender": "Female"
+        "gender": "Male"
       }
     },
     "10001-03-002": {
-      "name": "Second Daughter of Proband",
-      "father": "10001-01-001",
-      "mother": "10001-01-002",
+      "name": "Daughter 1",
+      "father": "10001-01-004",
+      "mother": "10001-01-005",
       "demographics": {
         "gender": "Female"
       }
     },
     "10001-03-003": {
-      "name": "First Son of Proband",
-      "father": "10001-01-001",
-      "mother": "10001-01-003",
+      "name": "Daughter 2",
+      "father": "10001-01-004",
+      "mother": "10001-01-005",
+      "demographics": {
+        "gender": "Female"
+      }
+    },
+    "10001-01-005": {
+      "name": "Wife",
+      "demographics": {
+        "gender": "Female"
+      }
+    },
+
+    "10001-01-006": {
+      "name": "Brother",
+      "father": "10001-02-017",
+      "mother": "10001-02-016",
       "demographics": {
         "gender": "Male"
       }
     },
-    "10001-01-002": {
-      "name": "Partner of Proband for Daughters",
+    "10001-01-007": {
+      "name": "Proband Person",
+      "father": "10001-02-017",
+      "mother": "10001-02-016",
       "demographics": {
         "gender": "Female"
       }
     },
-    "10001-06-010": {
-      "name": "Half Great Aunt",
-      "father": "10001-08-001",
-      "mother": "10001-08-005",
+    "10001-01-012": {
+      "name": "Sister with kids",
+      "father": "10001-02-017",
+      "mother": "10001-02-016",
       "demographics": {
         "gender": "Female"
       }
     },
-    "10001-06-011": {
-      "name": "Half Great Uncle",
-      "father": "10001-08-006",
-      "mother": "10001-08-002",
+    "10001-01-015": {
+      "name": "Single Sister",
+      "father": "10001-02-017",
+      "mother": "10001-02-016",
+      "demographics": {
+        "gender": "Female"
+      }
+    },
+
+    "10001-03-008": {
+      "name": "Nephew 1",
+      "father": "10001-01-013",
+      "mother": "10001-01-012",
       "demographics": {
         "gender": "Male"
       }
     },
-    "10001-06-012": {
-      "name": "Half Great Aunt (only dad in tree)",
-      "father": "10001-08-003",
+    "10001-03-009": {
+      "name": "Niece 1",
+      "father": "10001-01-013",
+      "mother": "10001-01-012",
       "demographics": {
         "gender": "Female"
       }
     },
-    "10001-04-005": {
-      "name": "Child of Great Aunt",
-      "mother": "10001-06-012",
+    "10001-03-010": {
+      "name": "Nephew 2",
+      "father": "10001-01-014",
+      "mother": "10001-01-012",
+      "demographics": {
+        "gender": "Male"
+      }
+    },
+    "10001-03-011": {
+      "name": "Niece 2",
+      "father": "10001-01-014",
+      "mother": "10001-01-012",
       "demographics": {
         "gender": "Female"
+      }
+    },
+    "10001-01-013": {
+      "name": "Brother-in-Law 1",
+      "demographics": {
+        "gender": "Male"
+      }
+    },
+    "10001-01-014": {
+      "name": "Brother-in-Law 2",
+      "demographics": {
+        "gender": "Male"
+      }
+    },
+    "10001-02-016": {
+      "name": "Father",
+      "father": "10001-04-021",
+      "demographics": {
+        "gender": "Female"
+      }
+    },
+    "10001-02-017": {
+      "name": "Mother",
+      "demographics": {
+        "gender": "Male"
+      }
+    },
+    "10001-02-018": {
+      "name": "Uncle 1",
+      "father": "10001-04-021",
+      "demographics": {
+        "gender": "Male"
+      }
+    },
+    "10001-02-019": {
+      "name": "Uncle 2",
+      "father": "10001-04-021",
+      "demographics": {
+        "gender": "Male"
+      }
+    },
+    
+    "10001-04-021": {
+      "name": "Gramps",
+      "demographics": {
+        "gender": "Male"
       }
     }
-
   }
 }

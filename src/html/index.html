@@ -1,11 +1,36 @@
 <HTML>
+  <SCRIPT defer type="module" src="../js/fhh_build_pedigree.js"> </SCRIPT>
+  <SCRIPT defer type="module" src="../js/fhh_display_pedigree.js"> </SCRIPT>
+  <SCRIPT defer type="module" src="../js/fhh_load.js"> </SCRIPT>
+  <SCRIPT defer type="module" src="../js/fhh_move.js"> </SCRIPT>
+  <LINK rel="stylesheet" href="../css/pedigree.css"></LINK>
 <TITLE> Pedigree Drawing </TITLE>
-<SELECT>
-  <OPTION> </OPTION>
-  <OPTION> This is where we can pick the file </OPTION>
-</SELECT>
-<DIV class="fhh_pedigree" id="main">
-  This content will be replaced by the Pedigree Diagram
-</DIV>
+<BODY>
+  <DIV class='navbar'>
+    <BUTTON>LOG</BUTTON>
+    <BUTTON id='advance_button'>Advance</BUTTON>
+    <SELECT id="file_select">
+      <OPTION> </OPTION>
+      <OPTION> This is where we list the pedigrees </OPTION>
+    </SELECT>
+    <div class="radio-toolbar">
+      <input type="radio" id="details" name="action_choice" value="details" checked="checked">
+      <label for="details">Details</label>
 
+      <input type="radio" id="slide" name="action_choice" value="slide">
+      <label for="slide">Slide</label>
+
+      <input type="radio" id="free" name="action_choice" value="free">
+      <label for="free">Free</label>
+
+
+      <input type="radio" id="annotate" name="action_choice" value="annotate">
+      <label for="annotate">Annotate</label>
+    </DIV>
+  </DIV>
+
+  <DIV class="fhh_pedigree" id="main" style='overflow-y: scroll;'>
+    Loading ...
+  </DIV>
+</BODY>
 </HTML>

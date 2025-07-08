@@ -1,7 +1,9 @@
 import {  set_data, determine_age, find_children, find_all_partners, find_children_from_both_parents,
           find_all_parents_of_list, build_family_tree_with_ancestors, build_entire_family_tree,
           expand_one_generation_to_include_partners, expand_next_generation_to_include_all_children,
-          determine_sex
+          determine_sex, find_orphaned_people, place_orphaned_people, find_in_tree,
+          find_first_in_generation, find_last_in_generation, set_all_locations,
+          find_parent_of_male_in_couple, find_parent_of_female_in_couple
        } from './fhh_build_pedigree';
 
 import d from './fhh_pedigree.test.json';
@@ -151,7 +153,7 @@ test("Test see if we can find all great-great-grandparents", () => {
 
 test("Test see if we build a family tree of ancestors", () => {
   const family_tree = build_family_tree_with_ancestors();
-//  console.log(family_tree);
+  console.log(family_tree);
 
   expect(family_tree[0][0].father).toContain("10001-08-003");
   expect(family_tree[1][0].father).toContain("10001-06-007");
@@ -191,7 +193,8 @@ test("Test expand_next_generation_to_include_all_children", () => {
 //  console.log(family_tree[0]);
   family_tree[0] = expand_one_generation_to_include_partners(family_tree[0]);
   console.log(family_tree[0]);
-  let next_generation = expand_next_generation_to_include_all_children(family_tree[1], family_tree[0]);
+  console.log(family_tree[1]);
+  let next_generation = expand_next_generation_to_include_all_children(family_tree[0], family_tree[1]);
   console.log(next_generation);
   const final_look = expand_one_generation_to_include_partners(next_generation);
   console.log(final_look);
@@ -213,8 +216,57 @@ test("Test expand_next_generation_to_include_all_children", () => {
 
 });
 
-test("Test expand_next_generation_to_include_all_children", () => {
+test("Test build_entire_family_tree", () => {
   const family_tree = build_entire_family_tree();
   console.log(family_tree);
 
+});
+/*
+test("Test find_orphaned_people", () => {
+  const orphaned_list = find_orphaned_people();
+  console.log(orphaned_list);
+});
+
+test("Test place_orphaned_people", () => {
+  place_orphaned_people();
+});
+
+test("Test find_in_tree", () => {
+  const family_tree = build_family_tree_with_ancestors();
+
+  find_in_tree("10001-06-007", family_tree);
+
+});
+*/
+test("Test find_in_generation", () => {
+  const family_tree = build_entire_family_tree();
+  const first = find_first_in_generation("10001-01-001", family_tree[4]);
+  const last = find_last_in_generation("10001-01-001", family_tree[4]);
+  const invalid = find_last_in_generation("BOO", family_tree[4]);
+  console.log (family_tree[4]);
+  console.log (first + ":" + last);
+  console.log (invalid);
+  expect(first).toBe(0);
+  expect(last).toBe(2);
+  expect(invalid).toBeNull();
+});
+
+test("Test set_all_locations", () => {
+  const family_tree = build_entire_family_tree();
+  set_all_locations(family_tree);
+  console.log(family_tree);
+
+});
+
+test("Test find_parent_of_couple", () => {
+  const family_tree = build_entire_family_tree();
+  set_all_locations(family_tree);
+  console.log(family_tree);
+  const girl_couple = family_tree[5][0];
+  console.log (girl_couple);
+  let girls_parent = find_parent_of_female_in_couple(girl_couple, family_tree);
+  console.log (girls_parent);
+  const boy_couple = family_tree[5][3];
+  const boys_parent = find_parent_of_male_in_couple(boy_couple, family_tree);
+  console.log (boys_parent);
 });
