@@ -158,7 +158,9 @@ function add_unplaced_people_alerts(alert_elem) {
     p.append("Missing People: ");
     for (const index in missing_people) {
       const person_id = missing_people[index];
-      const button = create_button(person_id);
+      const children = find_children(person_id);
+      const text = person_id + " [" + children.length + "]"
+      const button = create_button(text);
       p.append(button);
     }
     return true;

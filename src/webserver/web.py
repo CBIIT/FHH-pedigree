@@ -7,7 +7,7 @@ app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True # Explicitly enable pretty-prin
 
 
 CONFIG_FOLDER = os.path.join(app.root_path, 'config')
-PROCESSED_FOLDER = os.path.join(app.root_path, 'processed')
+PROCESSED_FOLDER = os.path.join(app.root_path, '../../processed')
 ANNOTATIONS_FOLDER = os.path.join(app.root_path, 'annotations')
 
 @app.route('/')
