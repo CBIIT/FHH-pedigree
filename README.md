@@ -1,3 +1,4 @@
 # FHH-pedigree
-This is where we will put source documentation
+
+To run the program, clone and type python3 src/webserver/web.py
 
