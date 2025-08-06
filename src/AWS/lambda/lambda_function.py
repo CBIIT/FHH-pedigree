@@ -6,19 +6,60 @@ from json_processor import JSONProcessor
 s3_client = boto3.client('s3')
 
 def lambda_handler(event, context):
+    # Lookup table for subdirectory mappings
+    lookup_table = {
+        'chordoma': 'Chordoma',
+        'dicer1': 'DICER1',
+        'fanconi': 'fanconi',
+        'hemopoietic': 'LPD',
+        'ibmfs': 'IBMFS',
+        'lfss': 'LFS',
+        'melanoma': 'Melanoma/Spitz tumor',
+        'metformin': 'Metformin',
+        'omnibus': 'Omnibus',
+        'ras': 'RAS',
+        'xp-het': 'XP Heterozygotes'
+    }
+
     print("[INFO] Running json_processor ...")
 
     s3_bucket_name = event['Records'][0]['s3']['bucket']['name']
     s3_file_name = event['Records'][0]['s3']['object']['key']
     if s3_bucket_name == 'example-bucket':
-        s3_bucket_name = 'nci-cbiit-analysistools-fhhpedigree-dev'
+        s3_bucket_name = 'nci-cbiit-fhhpb-data-dev'
         s3_file_name = 'raw/00101.json'
 
     print(f"Bucket: {s3_bucket_name}")
     print(f"Filename: {s3_file_name}")
 
     if s3_file_name.startswith('raw/'):
+        # Normalize path separators and remove leading/trailing slashes
+        normalized_path = s3_file_name.strip('/').replace('\\', '/')
+        # Split the path into components
+        path_parts = normalized_path.split('/')
+        # Extract filename
+        filename = path_parts[-1]
+
+        # Determine root directory and subdirectory
+        if len(path_parts) >= 2:
+            root_dir = path_parts[0]
+
+            if len(path_parts) == 2:
+                # Direct file in root (e.g., 'raw/file.txt')
+                subdirectory = None
+                full_name = "(NO SUBDIRECTORY)"
+            else:
+                # File in subdirectory (e.g., 'raw/lfs/file.txt')
+                subdirectory = path_parts[1].lower()
+                full_name = lookup_table.get(subdirectory, "(NO LOOKUP)")
+        else:
+            # Single component path
+            root_dir = None
+            subdirectory = None
+            full_name = None
+
         print(f"[INFO] Processing file {s3_file_name}")
+        print(f"[INFO]   for study {full_name}")
 
         #s3_client.download_file(s3_bucket_name, 'json', s3_file_name)
         response = s3_client.get_object(Bucket=s3_bucket_name, Key=s3_file_name)
@@ -67,7 +108,7 @@ def lambda_handler(event, context):
         print(f"[INFO] Processing complete!")
         print(f"[INFO] Processed {len(input_data)} records")
         print(f"[INFO] Generated data for {len(processor.people)} people")
-        print(f"[INFO] Proband: {processor.proband}")
+        print(f"[INFO] Proband: {processor.general['proband']}")
     else:
         print(f"[INFO] Skipping file {s3_file_name}")
 

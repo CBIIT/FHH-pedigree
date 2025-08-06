@@ -8,8 +8,10 @@ demographics, diseases, procedures, and family relationships.
 """
 
 import json
+import re
 import sys
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
@@ -23,7 +25,8 @@ class JSONProcessor:
     """
 
     def __init__(self):
-        self.proband = None
+        #self.proband = None
+        self.general = defaultdict(dict)
         self.people = defaultdict(dict)
 
     def load_s3_json(self, s3_obj) -> Optional[Dict[str, Any]]:
@@ -145,6 +148,7 @@ class JSONProcessor:
         # Build person structure
         person_data = {
             'name': full_name,
+            'born': record.get('DEMO[BRTHDAT_RAW]', ''),
             'deceased': record.get('DEMO[DTHDAT_RAW]', ''),
             'father': record.get('CORE[FPT_ID3]', ''),
             'mother': record.get('CORE[MPT_ID3]', ''),
@@ -176,10 +180,11 @@ class JSONProcessor:
             return None
 
         disease_num = record.get('Subject_cancer[CANCER.NUM]', '')
+        med_code, shorthand = self._parse_medical_code(code)
 
         return {
-            'shorthand': code,
-            'code': code,
+            'shorthand': shorthand,
+            'code': med_code,
             'laterality': str(record.get('Subject_cancer[CANCER.PRM_TUMOR_LATERAL_TP_STD]', '')),
             'diagnosis_method': record.get('Subject_cancer[CANCER.PATH_ACQ_METH_TP]', ''),
             'age_of_diagnosis': str(record.get('Subject_cancer[CANCER.AGE_AT_DIAGNOSIS]', '')),
@@ -235,6 +240,33 @@ class JSONProcessor:
                    for item in items_list):
             items_list.append(new_item)
 
+    def _parse_medical_code(self, text):
+        """
+        Parse medical diagnostic code text to extract the code and title.
+
+        Args:
+            text (str): Input text in format "CODE - TITLE"
+
+        Returns:
+            tuple: (code, title) or (None, None) if no match
+        """
+        # Regular expression pattern to match code and title
+        # Pattern explanation:
+        # ^         - Start of string
+        # ([A-Z]\d+(?:\.\d+)?) - Capture group 1: Letter followed by digits, optionally with decimal
+        # \s*-\s*   - Dash with optional whitespace on both sides
+        # (.+)      - Capture group 2: Everything else (the title)
+        # $         - End of string
+        pattern = r'^([A-Z]\d+(?:\.\d+)?)\s*-\s*(.+)$'
+
+        match = re.match(pattern, text.strip())
+        if match:
+            code = match.group(1)
+            title = match.group(2).strip()
+            return code, title
+        else:
+            return None, None
+
     def process_records(self, records: List[Dict[str, Any]]) -> None:
         """
         Process a list of medical records and organize by person.
@@ -248,12 +280,32 @@ class JSONProcessor:
         if not records:
             raise ValueError("No records provided for processing")
 
-        # Set proband as the first person in the input file
+        # Set study, proband, family classification, and family genetic status as the first person in the input file
         try:
-            self.proband = records[0]['Merge1[Subject]']
-            print(f"[INFO] Processing proband: {self.proband}")
+            self.general["study"] = records[0]['Merge1[project]']
+            print(f"[INFO] Processing study: {self.general['study']}")
         except (KeyError, IndexError):
             raise ValueError("Cannot determine proband from first record")
+        try:
+            self.general["proband"] = records[0]['Merge1[Subject]']
+            #self.proband = self.general["proband"] #records[0]['Merge1[Subject]']
+            print(f"[INFO] Processing proband: {self.general['proband']}")
+        except (KeyError, IndexError):
+            raise ValueError("Cannot determine proband from first record")
+        try:
+            self.general["family_classification"] = records[0]['Append Genetic status[result.family_classification]']
+            print(f"[INFO] Processing family classification: {self.general['family_classification']}")
+        except (KeyError, IndexError):
+            self.general["family_classification"] = "NO-FAMILY-CLASSIFICATION"
+            print(f"[WARNING] Cannot determine family classification from first record")
+            #raise ValueError("Cannot determine family classification from first record")
+        try:
+            self.general["family_genetic_status"] = records[0]['Append Genetic status[result.family_genetic_status]']
+            print(f"[INFO] Processing family genetic status: {self.general['family_genetic_status']}")
+        except (KeyError, IndexError):
+            self.general["family_genetic_status"] = "NO-FAMILY-GENETIC-STATUS"
+            print(f"[WARNING] Cannot determine family genetic status from first record")
+            #raise ValueError("Cannot determine family genetic status from first record")
 
         # Process each record
         for i, record in enumerate(records):
@@ -304,6 +356,16 @@ class JSONProcessor:
                 print(f"[WARNING] Error processing record {i}: {e}")
                 continue
 
+        # clean up so empty records are not present (thus reducing file-size)
+        if True: # compress
+            for person_id, person_data in self.people.items():
+                try:
+                    # clear out empty records (e.g., deceased)
+                    self.people[person_id] = {k: v for k, v in person_data.items() if v not in (None, '', [], {}, ())}
+                except Exception as e:
+                    print(f"[WARNING] Error cleaning record {person_id}: {e}")
+                    continue
+
     def get_output_data(self) -> Dict[str, Any]:
         """
         Get the processed data in the final output format.
@@ -311,8 +373,12 @@ class JSONProcessor:
         Returns:
             Dictionary with proband and people data
         """
+        # generate updated last datetime stamp (in ISO 8601 formatted string)
+        self.general["last_updated"] = datetime.now().isoformat()
+
         return {
-            'proband': self.proband,
+            #'proband': self.proband,
+            'general': dict(self.general),
             'people': dict(self.people)  # Convert defaultdict to regular dict
         }
 
@@ -365,9 +431,10 @@ def build_friendly_json_file(json_obj: Dict[str, Any], output_path: str) -> None
     """
     write_json_to_file(json_obj, output_path)
 
-def build_json_file(proband: str, people: Dict[str, Any], output_path: str, indent: int = 2) -> None:
+def build_json_file(proband: str, general: Dict[str, str], people: Dict[str, Any], output_path: str, indent: int = 2) -> None:
     d = defaultdict(dict)
-    d['proband'] = proband
+    #d['proband'] = proband
+    d['general'] = general
     d['people'] = people
 
     with open(output_path, 'w', encoding = 'utf-8') as jsonf:
@@ -391,9 +458,10 @@ def main():
         base_path = Path(base_dir)
 
         # Construct file paths
-        input_path = base_path / input_file
-        reference_path = base_path / reference_file
-        output_path = Path.cwd() / output_file
+        input_path = base_path / "raw/" / input_file
+        reference_path = base_path / "formatted/" / reference_file
+        #output_path = Path.cwd() / output_file
+        output_path = base_path / "processed/" / output_file
 
         print(f"[INFO] Base directory: {base_path}")
         print(f"[INFO] Input file: {input_path}")
@@ -412,8 +480,8 @@ def main():
         try:
             reference_data = processor.load_json(reference_path)
             # Save formatted copies for debugging
-            processor.save_json(input_data, Path.cwd() / "debug_input.json")
-            processor.save_json(reference_data, Path.cwd() / "debug_reference.json")
+            processor.save_json(input_data, base_path / "debug/" / "debug_input.json")
+            processor.save_json(reference_data, base_path / "debug/" / "debug_reference.json")
         except Exception as e:
             print(f"[WARNING] Could not load reference file: {e}")
 
@@ -428,7 +496,7 @@ def main():
         print(f"[INFO] Processing complete!")
         print(f"[INFO] Processed {len(input_data)} records")
         print(f"[INFO] Generated data for {len(processor.people)} people")
-        print(f"[INFO] Proband: {processor.proband}")
+        #print(f"[INFO] Proband: {processor.proband}")
 
     except Exception as e:
         print(f"[ERROR] Processing failed: {e}")

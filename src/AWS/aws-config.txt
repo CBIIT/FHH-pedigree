@@ -1,0 +1,65 @@
+Configuration for FHH Pedigree JSON Processor AWS Lambda function
+- Locate AWS access portal and navigate to the target AWS account (e.g., NIH.NCI.CBIIT.FAMILYHISTORY.NONPROD).
+- Be sure you are in region 'us-east-1' (N. Virginia)
+
+I. S3, generate a S3 bucket
+1. Click 'Create bucket'
+2. Set 'Bucket name' as 'nci-cbiit-fhhpb-data-dev' (or something similar)
+3. Add Tags
+3a. 'EnvironmentTier' 'DEV', 'QA' or 'PROD'
+3b. 'ApplicationName' : 'fhhpb'
+3c. 'Project' : 'fhhpb'
+3d. 'ResourceName' : 'dev-fhhpb-s3'
+3e. 'CreateDate' : '07-10-2025'
+3f. 'CreatedBy' : 'Christopher Siwy'
+4. Create directories
+4a. Create folder 'raw'
+4b. Create folder 'processed'
+
+II. Lambda, generate Python code
+1. Click 'Create function'
+2. Configure as such:
+2a. 'Function name' as 'nci-cbiit-fhhpb-jsonprocessor-dev'
+2b. Set 'Runtime' as 'Python 3.13' (or newer)
+2c. Set 'Execution role' to 'Use an existing role' specifically 'power-user-analysistools-role-dev'
+2d. Set 'Description' to 'Transforms FHH pedigree data from raw JSON files into a specific JSON format that can be processed by FHH Pedigree Builder.'
+3. Add trigger
+3a. Click 'Add trigger'
+3b. Set source to 'S3'
+3c. Set 'Bucket' to 'nci-cbiit-fhhpb-data-dev' (or something similar)
+3d. Set 'Event types' to 'PUT'
+3e. Set 'Prefix' to 'raw/'
+3f. Set 'Suffix' to '.json'
+3g. Check acknowledgement and click 'Add'
+X4. Add destination
+X4a. Click 'Add destination'
+X4b. Set 'Destination type' to 'S3 bucket'
+X4c. Set 'Destination' to 'nci-cbiit-fhhpb-data-dev'
+X4d. Click 'Save'
+5. Add Tags (tab 'Configuration' > 'Tags')
+5a. 'EnvironmentTier' 'DEV', 'QA' or 'PROD'
+5b. 'ApplicationName' : 'fhhpb'
+5c. 'Project' : 'fhhpb'
+5d. 'ResourceName' : 'dev-fhhpb-lambda'
+5e. 'CreateDate' : '07-10-2025'
+5f. 'CreatedBy' : 'Christopher Siwy'
+6. Add Code (tab 'Code')
+6a. Create new file 'json_processor.py' and copy in code
+6b. Copy in code for 'lambda_function.py'
+6c. Click 'Deploy'
+
+III. CloudWatch Log Group
+1. Click 'Create log group'
+1a. Set 'Log group named '/analysistools/dev/fhhpb'
+1b. Set 'Retention setting' to '6 months (180 days)' for DEV (or '12 months (365 days)' for PROD)
+2. Add Tags (tab 'Configuration' > 'Tags')
+2a. 'EnvironmentTier' 'DEV', 'QA' or 'PROD'
+2b. 'ApplicationName' : 'fhhpb'
+2c. 'Project' : 'fhhpb'
+2d. 'ResourceName' : 'dev-fhhpb-loggroup'
+2e. 'CreateDate' : '07-10-2025'
+2f. 'CreatedBy' : 'Christopher Siwy'
+3. Click 'Create'
+4. Navigate back to 'Lambda' function and check that log group is correct.
+4a. Under 'Configuration' > 'Monitoring and operations tools' > 'Logging configuration',
+you may have to change the default (i.e., '/aws/lambda/nci-cbiit-fhhpedigree-jsonprocessor-dev')
