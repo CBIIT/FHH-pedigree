@@ -1,5 +1,6 @@
 
-import { find_all_partners, find_all_children, find_all_descendants } from "./fhh_build_pedigree.js";
+import { find_all_partners, find_all_children, find_all_descendants, get_data } from "./fhh_build_pedigree.js";
+import { get_config} from "./fhh_display_pedigree.js";
 
 var free_move = false;
 var slide_move = false;
@@ -94,6 +95,8 @@ function stop_free_move(e) {
   let diff_x = e.pageX - original_x;
   let diff_y = e.pageY - original_y;
 
+  console.log(e.target.id);
+
   free_move = false;
 }
 
@@ -126,17 +129,6 @@ function slide_move_element(e) {
     move_all_elements_of_a_person(person_id, diff_x, diff_y);
 
     const partners = find_all_partners(person_id);
-//    for (const i in partners) {
-//      const partner_id = partners[i];
-//      console.log(partner_id);
-//      move_all_elements_of_a_person(partner_id, diff_x, diff_y);
-//    }
-//    const children = find_all_children(person_id);
-//    for (const i in children) {
-//      const child_id = children[i];
-//      console.log(child_id);
-//      move_all_elements_of_a_person(child_id, diff_x, diff_y);
-//    }
 
     let descendants = [];
     descendants = find_all_descendants(person_id, descendants);
@@ -144,8 +136,6 @@ function slide_move_element(e) {
       const descendant_id = descendants[i];
       move_all_elements_of_a_person(descendant_id, diff_x, diff_y);
     }
-
-    console.log(descendants);
   }
 }
 
@@ -170,6 +160,8 @@ function move_element(obj, diff_x, diff_y) {
 
 // Applied to rect, circles, text; anything with a fixed point as x,y
 function move_rect(el, diff_x, diff_y) {
+  const config = get_config();
+
   var current_x = el.attributes.x.value;
   var current_y = el.attributes.y.value;
   var new_x = current_x - diff_x;
@@ -177,6 +169,15 @@ function move_rect(el, diff_x, diff_y) {
 
   el.attributes.x.value = new_x;
   el.attributes.y.value = new_y;
+
+  const person_id = el.attributes.id.value;
+  let data = get_data();
+  if (person_id && data["people"][person_id]) {
+    const person = data["people"][person_id]
+    person.x = new_x + config.size/2;  // Center of Males is offset by half the size of the box
+    person.y = new_y + config.size/2;
+    person.moved = true;
+  }
 }
 
 function move_circle(el, diff_x, diff_y) {
@@ -187,6 +188,50 @@ function move_circle(el, diff_x, diff_y) {
 
   el.attributes.cx.value = new_x;
   el.attributes.cy.value = new_y;
+
+  const person_id = el.attributes.id.value;
+  let data = get_data();
+  if (person_id && data["people"][person_id]) {
+    const person = data["people"][person_id]
+    person.x = new_x;
+    person.y = new_y;
+    person.moved = true;
+  }
+}
+
+function move_poly(el, diff_x, diff_y) {
+  var current_x = el.attributes.cx.value;
+  var current_y = el.attributes.cy.value;
+  var new_x = current_x - diff_x;
+  var new_y = current_y - diff_y;
+
+  let current_points = el.attributes.points.value;
+  const new_points = shift_points(current_points, diff_x, diff_y);
+  el.attributes.points.value = new_points;
+
+  const person_id = el.attributes.id.value;
+  let data = get_data();
+  if (person_id && data["people"][person_id]) {
+    const person = data["people"][person_id]
+    person.x = new_x;
+    person.y = new_y;
+    person.moved = true;
+  }
+}
+
+function shift_points(points, diff_x, diff_y) {
+  let new_points = "";
+  const point_array = points.split(' ');
+  for (const i in point_array) {
+    const point = point_array[i];
+    if (point && point.length > 0) {
+      const [x, y] = point.split(',');
+      const new_x = parseInt(x) - diff_x;
+      const new_y = parseInt(y) - diff_y;
+      new_points += new_x + "," + new_y + " ";
+    }
+  }
+  return new_points;
 }
 
 function move_text(el, diff_x, diff_y) {
@@ -199,6 +244,9 @@ function move_text(el, diff_x, diff_y) {
   el.attributes.y.value = new_y;
 }
 
+function isString(variable) {
+  return typeof variable === 'string';
+}
 
 function move_line(el, diff_x, diff_y) {
   if (el.attributes === undefined) return;  // Only move items with the right values

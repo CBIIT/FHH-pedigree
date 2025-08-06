@@ -11,17 +11,36 @@ export function set_data (d) {
   data = d;
 }
 
+export function get_data (d) {
+  return data;
+}
+
+export function get_config (d) {
+  return data;
+}
+
 ///////////////////////////////
+
+export function get_generation_count() {
+  const generation_count = get_youngest_generation() - get_oldest_generation();
+  console.log( (get_youngest_generation()-1) + "<->" + (get_oldest_generation()-1) + ":" + generation_count );
+  return generation_count + 1; // Add one for the proband row
+}
 
 export function get_furthest_right() {
   return furthest_right;
+}
+
+export function reset_furthest_locations() {
+  furthest_left = 0;
+  furthest_right = 0;
 }
 
 export function get_furthest_left() {
   return furthest_left;
 }
 
-function get_oldest_generation() {
+export function get_oldest_generation() {
   let min = 0;
   for (const person_id in data["people"]) {
     const person = data["people"][person_id];
@@ -29,7 +48,7 @@ function get_oldest_generation() {
   }
   return min;
 }
-function get_youngest_generation() {
+export function get_youngest_generation() {
   let max = 0;
   for (const person_id in data["people"]) {
     const person = data["people"][person_id];
@@ -133,6 +152,7 @@ export function find_all_partners(person_id) {
 ///////////////////////////////////////
 
 export function  build_entire_family_tree (proband_id) {
+  console.log(furthest_left);
   family_tree = [];
 
   organize_parents(proband_id, 0, "proband");
@@ -255,6 +275,7 @@ function set_locations(list) {
 
   for (const i in list) {
     const person_id = list[i];
+    console.log("Placing: " + person_id);
 
     const partners = find_all_partners(person_id);
     if (partners && partners.length > 1) {
@@ -264,10 +285,10 @@ function set_locations(list) {
       if (midpoint == null) {
         const side = data["people"][person_id].side;
         if (side == "maternal" || side == "proband") {
-          furthest_left--;
+          furthest_left-=2;
           data["people"][person_id].loc = furthest_left;
         } else {
-          furthest_right++;
+          furthest_right+=2;
           data["people"][person_id].loc = furthest_right;
         }
       } else {
@@ -284,6 +305,7 @@ function find_location_of_multiple_partners(person_id) {
     const partner_id = partners[p];
     const midpoint = get_midpoint_of_children_from_both_parents(person_id, partner_id);
     if (!data["people"][partner_id]) return;
+    console.log ("PLACING(P): " + person_id + ":" + midpoint);
 
     if (data["people"][person_id].demographics.gender == "Female") {
       data["people"][person_id].loc = midpoint - 1;
@@ -322,6 +344,19 @@ function get_midpoint_of_children_from_both_parents(person_id, partner_id) {
 }
 
 /////////////
+
+export function check_for_unplaced_people() {
+  let missing_people = [];
+
+  for (const person_id in data["people"]) {
+    const person = data["people"][person_id];
+
+    if (!person.x || person.x < 0) { missing_people.push(person_id); console.log(person_id);}
+    else if (!person.y || person.u < 0) { missing_people.push(person_id); console.log(person_id);}
+  }
+
+  return missing_people;
+}
 
 export function check_for_overlaps(tree) {
   let gen_loc_list = [];
